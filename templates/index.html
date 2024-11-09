@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w3-row-padding">
+    <div class="w3-half">
+        <div class="w3-container w3-padding w3-round-xlarge w3-card-4">
+            <table class="w3-table-all">
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>IMAGE</th>
+                </tr>
+                {% for reg in regs %}
+                <tr>
+                    <td>{{ reg['id'] }}</td>
+                    <td>{{ reg['name'] }}</td>
+                    <td>
+                        <img src="{{ reg['imagename'] }}" style='width:80px;height:60px'>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="w3-half">
+        <div class="w3-container w3-padding w3-round-xlarge w3-card-4">
+			<table class="w3-table-all">
+				<tr>
+					<th><div id="my_camera" style="width:440px; height:380px; margin:auto"></div></th>
+					<th><div id="my_result" class="w3-center"></div></th>
+				</tr>
+			</table>
+			<div style="text-align: center;">
+				<button class="w3-button w3-red" onclick="take_snapshot()">SNAP</button>
+			</div>
+            <p>
+                <label><b>NAME</b></label>
+                <input type="text" name="name" id="name" class="w3-input">
+            </p>
+            <div style="text-align: center;">
+				<button class="w3-button w3-blue " onclick="save_snapshot()">REGISTER</button>
+				<button class="w3-button w3-orange" onclick="clear_view()">CANCEL</button>
+			</div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    Webcam.set({
+        width: 320,
+        height: 240,
+        dest_width: 320,
+        dest_height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+        force_flash: false,
+        flip_horiz: true,
+        fps: 45
+    });
+    Webcam.attach('#my_camera');
+        
+    function take_snapshot(){
+        Webcam.snap(function(data_uri) {
+            document.getElementById('my_result').innerHTML = "<img id='imageprev' src='" + data_uri + "'/>";
+        });
+    }
+
+    function save_snapshot(){
+        var data_uri = document.getElementById('imageprev').src;
+        var name = document.getElementById('name').value;
+        var url = "/saveinformation?name=" + name;
+        Webcam.upload(data_uri, url, function(code, text) {
+            alert("New Registration Added");
+            window.location.reload();
+        });
+    }
+
+    function clear_view(){
+        document.getElementById('name').value = "";
+        document.getElementById('my_result').innerHTML = "";
+    }
+</script>
+{% endblock %}
